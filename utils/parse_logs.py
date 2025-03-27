@@ -106,7 +106,7 @@ async def is_valid_ip(ip: str) -> bool:
 
 IP_V6_REGEX = re.compile(r"\[([0-9a-fA-F:]+)\]:\d+\s+accepted")
 IP_V4_REGEX = re.compile(r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})")
-EMAIL_REGEX = re.compile(r"email:\s*([A-Za-z0-9._%+-]+)")
+EMAIL_REGEX = re.compile(r"email:\s*([A-Za-z0-9._@%+-]+)")
 
 
 async def parse_logs(log: str) -> dict[str, UserType] | dict:  # pylint: disable=too-many-branches
