@@ -111,7 +111,7 @@ IP_V4_REGEX = re.compile(r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})")
 EMAIL_REGEX = re.compile(r"email:\s*([A-Za-z0-9._@%+-]+)")
 
 
-async def parse_logs(log: str, node: Optional[NodeType]) -> dict[str, UserType] | dict:  # pylint: disable=too-many-branches
+async def parse_logs(log: str, node: Optional[NodeType] = None) -> dict[str, UserType] | dict:  # pylint: disable=too-many-branches
     """
     Asynchronously parse logs to extract and validate IP addresses and emails.
 
@@ -167,7 +167,7 @@ async def parse_logs(log: str, node: Optional[NodeType]) -> dict[str, UserType] 
                 email,
                 UserType(name=email, ip=Counter({ip: 1})),
             )
-            
+
         if node is not None:
             user.nodes.add(node.node_name)
 
