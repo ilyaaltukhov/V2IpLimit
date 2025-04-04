@@ -168,6 +168,6 @@ async def parse_logs(log: str, node: Optional[NodeType] = None) -> dict[str, Use
             )
 
         if node is not None:
-            user.nodes.append(node.node_name)
+            user.nodes.add(node.node_name)
 
     return ACTIVE_USERS
