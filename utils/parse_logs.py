@@ -166,8 +166,8 @@ async def parse_logs(log: str, node: Optional[NodeType] = None) -> dict[str, Use
                 email,
                 UserType(name=email, ip=[ip]),
             )
-
+        
         if node is not None:
-            user.nodes.add(node.node_name)
+            ACTIVE_USERS[email].nodes.add(node.node_name)
 
     return ACTIVE_USERS
