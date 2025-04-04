@@ -23,9 +23,10 @@ async def check_ip_used() -> dict:
     all_users_log = {}
     for email in list(ACTIVE_USERS.keys()):
         data = ACTIVE_USERS[email]
-        ip_counts = Counter(data.ip)
-        data.ip = list({ip for ip in data.ip if ip_counts[ip] > 2})
-        all_users_log[email] = data.ip
+        for key, count in data.ip:
+            if count <= 2:
+                data.ip.pop(key)
+        all_users_log[email] = (list(data.ip.keys()), data.nodes)
         logger.info(data)
     total_ips = sum(len(ips) for ips in all_users_log.values())
     all_users_log = dict(
@@ -37,8 +38,8 @@ async def check_ip_used() -> dict:
     )
     messages = [
         f"<code>{email}</code> with <code>{len(ips)}</code> active ip  \n- "
-        + "\n- ".join(ips)
-        for email, ips in all_users_log.items()
+        + "\n- ".join(ips) + "\n- " + ", ".join(nodes)
+        for email, (ips, nodes) in all_users_log.items()
         if ips
     ]
     logger.info("Number of all active ips: %s", str(total_ips))
@@ -60,7 +61,7 @@ async def check_users_usage(panel_data: PanelType):
     except_users = config_data.get("EXCEPT_USERS", [])
     special_limit = config_data.get("SPECIAL_LIMIT", {})
     limit_number = config_data["GENERAL_LIMIT"]
-    for user_name, user_ip in all_users_log.items():
+    for user_name, (user_ip, nodes) in all_users_log.items():
         if user_name not in except_users:
             user_limit_number = int(special_limit.get(user_name, limit_number))
             if len(set(user_ip)) > user_limit_number:
@@ -71,7 +72,7 @@ async def check_users_usage(panel_data: PanelType):
                 logger.warning(message)
                 await send_logs(str("<b>Warning: </b>" + message))
                 try:
-                    await disable_user(panel_data, UserType(name=user_name, ip=[]))
+                    await disable_user(panel_data, UserType(name=user_name))
                 except ValueError as error:
                     print(error)
     ACTIVE_USERS.clear()

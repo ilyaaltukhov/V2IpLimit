@@ -106,7 +106,7 @@ async def get_nodes_logs(panel_data: PanelType, node: NodeType) -> None:
                     logger.info(log_message)
                     while True:
                         new_log = await ws.recv()
-                        await parse_logs(str(new_log))
+                        await parse_logs(str(new_log), node)
             except SSLError:
                 break
             except Exception as error:  # pylint: disable=broad-except
@@ -216,6 +216,13 @@ async def check_and_add_new_nodes(panel_data: PanelType, tg: asyncio.TaskGroup) 
                     await send_logs(log_message)
                     logger.info(log_message)
                     await create_node_task(panel_data, tg, node)
+                else:
+                    log_message = (
+                        f"Error adding node. id: {node.node_id}"
+                        + f" name: {node.node_name}, status: {node.status}, message: {node.message}"
+                    )
+                    await send_logs(log_message)
+                    
         await asyncio.sleep(25)
 
 

@@ -2,6 +2,7 @@
 This module contains the data classes used in the application.
 """
 
+from collections import Counter
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -70,4 +71,5 @@ class UserType:
 
     name: str
     status: UserStatus | None = None
-    ip: list[str] | list = field(default_factory=list)
+    ip: Counter = field(default_factory=Counter)
+    nodes: set = field(default_factory=set)
