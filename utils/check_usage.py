@@ -25,7 +25,7 @@ async def check_ip_used() -> dict:
         data = ACTIVE_USERS[email]
         ip_counts = Counter(data.ip)
         data.ip = list({ip for ip in data.ip if ip_counts[ip] > 2})
-        all_users_log[email] = (data.ip, data.nodes)
+        all_users_log[email] = data.ip
         logger.info(data)
     total_ips = sum(len(ips) for ips in all_users_log.values())
     all_users_log = dict(
@@ -37,8 +37,8 @@ async def check_ip_used() -> dict:
     )
     messages = [
         f"<code>{email}</code> with <code>{len(ips)}</code> active ip  \n- "
-        + "\n- ".join(ips) + "\nnodes: " + ", ".join(nodes)
-        for email, (ips, nodes) in all_users_log.items()
+        + "\n- ".join(ips) # + "\nnodes: " + ", ".join(nodes)
+        for email, ips in all_users_log.items()
         if ips
     ]
     logger.info("Number of all active ips: %s", str(total_ips))
