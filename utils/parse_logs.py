@@ -6,10 +6,11 @@ import ipaddress
 import random
 import re
 import sys
+from typing import Optional
 
 from utils.check_usage import ACTIVE_USERS
 from utils.read_config import read_config
-from utils.types import UserType
+from utils.types import NodeType, UserType
 
 try:
     import httpx
@@ -109,7 +110,7 @@ IP_V4_REGEX = re.compile(r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})")
 EMAIL_REGEX = re.compile(r"email:\s*([A-Za-z0-9._@%+-]+)")
 
 
-async def parse_logs(log: str) -> dict[str, UserType] | dict:  # pylint: disable=too-many-branches
+async def parse_logs(log: str, node: Optional[NodeType] = None) -> dict[str, UserType] | dict:  # pylint: disable=too-many-branches
     """
     Asynchronously parse logs to extract and validate IP addresses and emails.
 
@@ -165,5 +166,8 @@ async def parse_logs(log: str) -> dict[str, UserType] | dict:  # pylint: disable
                 email,
                 UserType(name=email, ip=[ip]),
             )
+
+        if node is not None:
+            user.nodes.append(node.node_name)
 
     return ACTIVE_USERS

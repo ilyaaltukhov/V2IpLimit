@@ -25,7 +25,7 @@ async def check_ip_used() -> dict:
         data = ACTIVE_USERS[email]
         ip_counts = Counter(data.ip)
         data.ip = list({ip for ip in data.ip if ip_counts[ip] > 2})
-        all_users_log[email] = data.ip
+        all_users_log[email] = (data.ip, data.nodes)
         logger.info(data)
     total_ips = sum(len(ips) for ips in all_users_log.values())
     all_users_log = dict(
@@ -37,8 +37,8 @@ async def check_ip_used() -> dict:
     )
     messages = [
         f"<code>{email}</code> with <code>{len(ips)}</code> active ip  \n- "
-        + "\n- ".join(ips)
-        for email, ips in all_users_log.items()
+        + "\n- ".join(ips) + "\nnodes: " + ", ".join(nodes)
+        for email, (ips, nodes) in all_users_log.items()
         if ips
     ]
     logger.info("Number of all active ips: %s", str(total_ips))
@@ -60,7 +60,7 @@ async def check_users_usage(panel_data: PanelType):
     except_users = config_data.get("EXCEPT_USERS", [])
     special_limit = config_data.get("SPECIAL_LIMIT", {})
     limit_number = config_data["GENERAL_LIMIT"]
-    for user_name, user_ip in all_users_log.items():
+    for user_name, (user_ip, nodes) in all_users_log.items():
         if user_name not in except_users:
             user_limit_number = int(special_limit.get(user_name, limit_number))
             if len(set(user_ip)) > user_limit_number:

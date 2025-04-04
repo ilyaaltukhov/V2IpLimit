@@ -71,3 +71,4 @@ class UserType:
     name: str
     status: UserStatus | None = None
     ip: list[str] | list = field(default_factory=list)
+    nodes: set = field(default_factory=set)
